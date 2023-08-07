@@ -1,0 +1,83 @@
+#!/usr/bin/env python
+
+import sys, string, random, argparse, pdb
+import pyperclip3
+
+def main():
+    length = 64 # default
+    alpha = [string.ascii_lowercase, string.ascii_uppercase,
+             string.digits]
+    special = string.punctuation
+
+    p = argparse.ArgumentParser(description=
+                                f'Generate a password randomly. Always includes '
+                                f'letters. Includes special chars "{special}" '
+                                f'by default, but this can be overridden. '
+                                f'Length is {length} by default but this can '
+                                f'be overridden.')
+    # Required arguments
+    p.add_argument('-l', '--length', action='store', type=int,
+                   help='Specify length of password.')
+    p.add_argument('-S', '--no-special-chars', action='store_true',
+                   help='Do not use any special chars.')
+    p.add_argument('-s', '--special-chars', action='store',
+                   help='Specify what the special chars should be.')
+    p.add_argument('-d', '--debug', action='store_true',
+                   help='Print debug statements')
+    ns = p.parse_args()
+
+    if ns.special_chars and ns.no_special_chars:
+        sys.exit('-s and -S are mutually exclusive')
+
+    if ns.length:
+        length = ns.length
+
+    if not ns.no_special_chars:
+        if ns.special_chars:
+            special = ns.special_chars
+        alpha.append(special)
+
+    chars = []
+
+    if length < len(alpha):
+        sys.exit('Minimum length is {}'.format(len(alpha)))
+
+    take = round(length / len(alpha))
+    swing = round(take / 2)
+    amts = [take + random.randint(-swing, swing) for a in alpha]
+    while (s := sum(amts)) != length:
+        if s > length:
+            m = max(amts)
+            i = amts.index(m)
+            amts[i] -= 1
+        else:
+            m = min(amts)
+            i = amts.index(m)
+            amts[i] += 1
+
+    assert len(amts) == len(alpha)
+
+    amts_i = iter(amts)
+
+    # O(n) for this section... there are no sorts
+    for a in alpha:
+        sample_size = next(amts_i)
+        assert sample_size >= 1
+        if ns.debug:
+            print(f'Adding\t{sample_size}\tchars from {a}')
+        chars += random.choices(a, k=sample_size)
+
+    if ns.debug:
+        print(f'Total\t{length}\tchars')
+
+    # Sort, so O(length^2) or potentially O(length·log(length))
+    chars = sorted(chars, key=lambda _: random.random())
+
+    assert(len(chars) == length)
+    pwd = ''.join(chars)
+    print(pwd)
+    pyperclip3.copy(pwd)
+    print('New password is saved to clipboard for you to paste elsewhere')
+
+if __name__ == '__main__':
+    main()
