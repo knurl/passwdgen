@@ -1,5 +1,8 @@
 TGT = passwdgen
-ICO = appicon.png
+APPICO = appicon.png
+MENUICO = menubaricon.svg
+ICONS = $(APPICO) $(MENUICO)
+
 
 default: mypy tags
 
@@ -17,12 +20,12 @@ dist/$(TGT)-U.dmg: dist/$(TGT).app
 	hdiutil create dist/$(TGT)-U.dmg -ov -volname "$(TGT)" -fs HFS+ \
 		-srcfolder dist/$(TGT).app
 
-dist/$(TGT).app: setup.py $(TGT).py $(ICO)
+dist/$(TGT).app: setup.py $(TGT).py $(ICONS)
 	python setup.py py2app
 
-setup.py: $(TGT).py $(ICO)
-	py2applet --optimize=0 --packages=rumps --iconfile=$(ICO) \
-		--plist=Info.plist --resources=menubaricon.png \
+setup.py: $(TGT).py $(ICONS)
+	py2applet --optimize=2 --packages=rumps --iconfile=$(APPICO) \
+		--plist=Info.plist --resources=$(MENUICO) \
 		--make-setup $(TGT).py
 		
 

@@ -4,7 +4,7 @@ import os, sys, string, random, argparse, pdb
 import rumps, pyperclip3 # type: ignore
 import tkinter as tk
 
-menuiconfn='menubaricon.png'
+menuiconfn='menubaricon.svg'
 appiconfn='appicon.png'
 default_len = 64
 max_len = 256
