@@ -39,7 +39,8 @@ def validate_specials(s: str) -> str:
 # no_specials: don't use any specials
 # my_specials: override specials explicitly. If empty then it's assumed that
 # default specials will be used (unless no_specials is set)
-# no_specials and my_specials are mutually exclusive
+# no_specials and my_specials are mutually exclusive, however both can be
+# false, indicating a request to use default specials.
 def generate_passwd(length: int = default_len, no_specials: bool = False,
                     my_specials: str = '', debug: bool = True) -> str:
     if debug:
